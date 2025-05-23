@@ -1,4 +1,6 @@
-# Development of a code to solve subproblems the flow of granular materials in a rotary kiln.
+# Flow of granular materials in a rotary kiln.
+
+**Description:** ...
 
 **Authors:** L. Plato, M. Sliwinski, D. Peschka
 
