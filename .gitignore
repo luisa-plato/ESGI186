@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# FEniCS output files
+*.vtu
+*.pvd
+*.h5
+
+# VSCode settings (optional, if you want to exclude user-specific settings)
+.vscode/
+
+# Environment files
+.env
+.venv/
+venv/
+env/
