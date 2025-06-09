@@ -3,34 +3,36 @@ from dolfin import *
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-import mshr
+# import mshr
 
 # Turn off logging
 set_log_level(LogLevel.ERROR)  # Only show errors
 
 # Parameters
 T = 1.0             # final time
-num_steps = 100    # number of time steps
+num_steps = 100     # number of time steps
 τ  = T / num_steps  # time step size
 ω  = 2*np.pi        # angular velocity (full rotation in T)
-ε  = 0.1           # interface thickness
+ε  = 0.02           # interface thickness
 h0 = 0.4            # height of the granular bed
-m  = 0.5           # mobility of the Allen-Cahn equation
+m  = 0.5            # mobility of the Allen-Cahn equation
 
 μ_s    = 1.0        # solid viscosity
 μ_g    = 1.0e-2     # gas viscosity
 β_pen  = 1e+4       # penality normal flow
-β_slip = 0.1        # slip tangential flow
+β_slip = 0.05        # slip tangential flow
+n_refine = 3        # Number of times to refine the mesh
 
-
-# create initial mesh for a rectangular domain of length: length + 1
-length = 5
-domain = mshr.Rectangle(Point(-1,-1),Point(length,1))
-mesh   = mshr.generate_mesh(domain,48)
+# create initial mesh for a rectangular domain of length L
+L = 5
+mesh = Mesh('../meshes/rectangle.xml')
+for i in range(n_refine):
+    mesh = refine(mesh)  # Refine the mesh for better resolution
+dim  = mesh.geometry().dim()
 
 # Define the feeding velocity and phase field for the boundary condition at the inflow (left) boundary
-v_feed = Constant((5.0, 0.0))
-phi_feed = Expression('(1 - tanh((x[1] + (1-h0))/epsilon))/2', degree=2, epsilon=ε, h0 = h0)
+v_in = Constant((5.0, 0.0))
+phi_in = Expression('(1 - tanh((x[1] + (1-h0))/epsilon))/2', degree=2, epsilon=ε, h0 = h0)
 
 
 # Define boundary
@@ -39,10 +41,10 @@ def boundary_top_n_bottom(x, on_boundary):
     return on_boundary and (near(x[1], -1, tol) or near(x[1], 1, tol))
 
 def boundary_left(x, on_boundary):
-    return on_boundary and near(x[0], -1, tol)
+    return on_boundary and near(x[0], 0, tol)
 
 def boundary_right(x, on_boundary):
-    return on_boundary and near(x[0], length, tol)
+    return on_boundary and near(x[0], L, tol)
 
 # Mark different part of the boundary for the definition of the variational problem
 facets = MeshFunction("size_t", mesh, 1)
@@ -70,7 +72,7 @@ def solve_stokes(vp_n, φ):
     f_grav = Constant((5.0, -20.0)) * φ  # gravity function
 
     # Define the boundary condition
-    bc_left = DirichletBC(Vs.sub(0), v_feed, boundary_left)                                 # DirichletBC for the velocity field at the inflow (left) boundary
+    bc_left = DirichletBC(Vs.sub(0), v_in, boundary_left)                                 # DirichletBC for the velocity field at the inflow (left) boundary
     bc_top_n_bottom = DirichletBC(Vs.sub(0).sub(1), Constant(0.0), boundary_top_n_bottom)   # Non-permeability conditions for the velocity field at the walls (top and bottom boundary)
     bcs = [bc_left, bc_top_n_bottom]                                                        # Collect boundary conditions
 
@@ -96,14 +98,14 @@ def solve_stokes(vp_n, φ):
     return vp
 
 # Define and solve variational problem for convective Allen-Cahn
-def solve_ac(φ_n, v, τ):
+def solve_ac(φ_n, v,v1, τ):
     φ,ψ = Function(V),TestFunction(V)
 
     #Define boundary conditions
-    bc_left = DirichletBC(V, phi_feed, boundary_left)
-
-    F_ac  = (φ - φ_n)/τ*ψ*dx + m*ε*inner(grad(φ), grad(ψ))*dx + 2*m/ε*φ_n*(2*φ_n*φ_n-3*φ_n+1)*ψ*dx
-    F_ac += dot(v, grad(φ)) * ψ * dx
+    bc_left = DirichletBC(V, phi_in, boundary_left)
+    
+    F_ac  = (φ - φ_n)/τ*ψ*dx + m*ε*inner(grad(φ), grad(ψ))*dx + 2*m/ε*φ*(2*φ*φ-3*φ+1)*ψ*dx
+    F_ac += 0.5*(dot(v, grad(φ))+dot(v1, grad(φ_n))) * ψ * dx
 
     #Outflow condition for right boundary
     #nn = FacetNormal(mesh)
@@ -122,27 +124,28 @@ def solve_ac(φ_n, v, τ):
 
 
 # Create a VTK file for visualization
-vtkfile_φ = File('2Drectangle/phi.pvd')
-vtkfile_v = File('2Drectangle/velocity.pvd')
+vtkfile_φ = File('rect_0/phi.pvd')
+vtkfile_v = File('rect_0/velocity.pvd')
 
 # Time-stepping loop
 t = 0
 vp_n = Function(Vs)
+vp_n1 = Function(Vs)
 Vout = VectorFunctionSpace(mesh, 'CG', 1)
 
 for n in tqdm(range(num_steps)):
     # Update time
     t += τ
-
+    vp_n1.assign(vp_n)  # Store previous velocity
     # Solve for the velocity v
     vp = solve_stokes(vp_n, φ_n)
-    v = vp.sub(0)
+    # v = vp.sub(0)
 
     # Solve the the phase field φ
-    φ = solve_ac(φ_n, v, τ)
+    φ = solve_ac(φ_n,vp.sub(0),vp_n1.sub(0), τ)
 
     # Prepare output
-    vout = project(φ_n*v, Vout)
+    vout = project(φ_n*vp.sub(0), Vout)
     φ_n.rename('phi','phi')
     vout.rename('v','v')
 
