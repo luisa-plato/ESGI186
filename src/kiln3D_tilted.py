@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import logging
-from mshr import *
+# from mshr import *
 from ufl import outer
 import json
 from petsc4py import PETSc
@@ -36,6 +36,12 @@ def write_state(mesh,q,fname,it=0,t=0):
     f.write(q,"q",t)
     f.close()
 
+def read_mesh(fname):
+    mesh = Mesh()
+    f = HDF5File(MPI.comm_world, fname + '.h5', 'r')
+    f.read(mesh, "mesh", False)
+    f.close()
+    return mesh
 
 
 # Parameters
@@ -43,35 +49,38 @@ T = 1.0             # final time
 num_steps = 100     # number of time steps
 τ  = T / num_steps  # time step size
 ω  = 2*np.pi        # angular velocity (full rotation in T)
-ε  = 0.1            # interface thickness
+ε  = 0.1/2          # interface thickness
 h0 = 0.4            # height of the granular bed
 m  = 0.5            # mobility of the Allen-Cahn equation
+ε_pre = 1e-3        # pressure stabilization parameter
 
 μ_s    = 1.0        # solid viscosity
 μ_g    = 1.0e-2     # gas viscosity
 β_pen  = 1e+3       # penality normal flow
-β_slip = 0.1        # slip tangential flow
+β_slip = 0.05        # slip tangential flow
 
 # Cylinder parameters
 radius = 1.0
 height = 5.0
 v_feed = Constant((0.0,0.0,5.0))
 
-# Full lower-half cylinder from z = -height to z = 0
-full_cylinder = Cylinder(Point(0.0, 0.0, -height),  # bottom center
-                         Point(0.0, 0.0, 0.0),      # top center
-                         radius, radius)
+# # Full lower-half cylinder from z = -height to z = 0
+# full_cylinder = Cylinder(Point(0.0, 0.0, -height),  # bottom center
+#                          Point(0.0, 0.0, 0.0),      # top center
+#                          radius, radius)
 
-# Subtract box that removes x < 0 part
-cutting_box = Box(Point(2*radius, -2*radius, -2*height),
-                  Point(0.0, 2*radius, 1.0))  # everything with x < 0
+# # Subtract box that removes x < 0 part
+# cutting_box = Box(Point(2*radius, -2*radius, -2*height),
+#                   Point(0.0, 2*radius, 1.0))  # everything with x < 0
 
-# Perform subtraction
-half_cylinder = full_cylinder - cutting_box
+# # Perform subtraction
+# half_cylinder = full_cylinder - cutting_box
 
-# Generate mesh
-mesh_resolution = 96
-mesh = generate_mesh(half_cylinder, mesh_resolution)
+# # Generate mesh
+# mesh_resolution = 96
+# mesh = generate_mesh(half_cylinder, mesh_resolution)
+mesh = read_mesh("../meshes/mesh3D")
+mesh = refine(mesh)
 
 # Define boundary
 tol     = 1E-4
@@ -106,7 +115,7 @@ v_rot  = Expression(("omega * x[1]","-omega * x[0]","0"), degree=2, omega = ω)
 V = FunctionSpace(mesh, 'CG', 1)
 
 # Space for Stokes problem
-FE_u = VectorElement('CG', mesh.ufl_cell(), 2)
+FE_u = VectorElement('CG', mesh.ufl_cell(), 1) # 2)
 FE_p = FiniteElement('CG', mesh.ufl_cell(), 1)
 Vs = FunctionSpace(mesh, MixedElement([FE_u, FE_p]))
 
@@ -128,6 +137,7 @@ def solve_stokes(vp_n,φ):
 
     # classical Stokes with RHS f_grav
     F_stokes  = 2 * μ * inner(sym(grad(v)), sym(grad(w))) * dx - p * div(w) * dx + q * div(v) * dx
+    F_stokes += inner(grad(p),grad(q)) * ε_pre * dx  # pressure stabilization term
     F_stokes -= inner(f_grav, w) * dx
 
     # slip boundary terms and penalty to enforce v*n = 0 on boundary
@@ -142,10 +152,10 @@ def solve_stokes(vp_n,φ):
     return vp
 
 # Define and solve variational problem for convective Allen-Cahn
-def solve_ac(φ_n, v, τ):
+def solve_ac(φ_n, v,v1, τ):
     φ,ψ = Function(V),TestFunction(V)
-    F_ac  = (φ - φ_n)/τ*ψ*dx + m*ε*inner(grad(φ), grad(ψ))*dx + 2*m/ε*φ_n*(2*φ_n*φ_n-3*φ_n+1)*ψ*dx
-    F_ac += dot(v, grad(φ)) * ψ * dx
+    F_ac  = (φ - φ_n)/τ*ψ*dx + m*ε*inner(grad(φ), grad(ψ))*dx + 2*m/ε*φ*(2*φ*φ-3*φ+1)*ψ*dx
+    F_ac += 0.5*(dot(v, grad(φ))+dot(v1, grad(φ_n))) * ψ * dx
     φ.assign(φ_n)
     bc = DirichletBC(V,φ_0, boundary_inflow) # phase field boundary condition
     solve(F_ac == 0, φ,bc,solver_parameters={'newton_solver': {'linear_solver': 'mumps'}})
@@ -155,6 +165,7 @@ def solve_ac(φ_n, v, τ):
 φ_0 = Expression('(1 - tanh((x[0] + (1-h0))/epsilon))/2', degree=2, epsilon=ε, h0 = h0)
 φ_n = interpolate(φ_0, V)
 vp_n = Function(Vs)
+vp_n1 = Function(Vs)
 
 # Time-stepping loop
 t = 0
@@ -165,14 +176,17 @@ for n in tqdm(range(num_steps)):
     t += τ
 
     # Solve for the velocity v
+    vp_n1.assign(vp_n)
     vp = solve_stokes(vp_n,φ_n)
-    v,p = vp.split()
+    # v,p = vp.split()
 
     # Solve the the phase field φ
-    φ = solve_ac(φ_n, v, τ)
+    # φ = solve_ac(φ_n, v, τ)
+    φ = solve_ac(φ_n,vp.sub(0),vp_n1.sub(0), τ)
 
-    write_state(mesh,φ,'kiln3D_tilted/phi'+str(n),it=n,t=t)
-    write_state(mesh,vp,'kiln3D_tilted/v'+str(n),it=n,t=t)
+
+    write_state(mesh,φ,'kiln3D/phi'+str(n),it=n,t=t)
+    write_state(mesh,vp,'kiln3D/v'+str(n),it=n,t=t)
 
     # Update previous solution
     φ_n.assign(φ)
