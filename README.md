@@ -10,14 +10,14 @@
 
 ## Allen–Cahn–Stokes model for rotary kiln
 
-We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross-section $d=2$) and a phase-field variable $\phi : \Omega \times [0, T] \to [0, 1]$, where $\phi \approx 1$ denotes the granular phase and $\phi \approx 0$ denotes the gas phase.
+We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross-section $d=2$) and a phase-field variable $\varphi : \Omega \times [0, T] \to [0, 1]$, where $\varphi \approx 1$ denotes the granular phase and $\varphi \approx 0$ denotes the gas phase.
 
 ### 1. Allen–Cahn equation (with advection)
 
 The phase field evolves according to:
 
 $$
-\frac{\varphi^{k+1} - \phi^k}{\tau} + \mathbf{v}^* \cdot \nabla \phi^{k+1} = m\left[-\varepsilon \Delta \phi^{k+1} + \frac{2}{\varepsilon} \phi^{k+1} (2(\phi^{k+1})^2 - 3\phi^{k+1} + 1)\right],
+\frac{\varphi^{k+1} - \varphi^k}{\tau} + \mathbf{v}^* \cdot \nabla \varphi^{k+1} = m\left[-\varepsilon \Delta \varphi^{k+1} + \frac{2}{\varepsilon} \varphi^{k+1} (2(\varphi^{k+1})^2 - 3\varphi^{k+1} + 1)\right],
 $$
 
 where:
@@ -27,20 +27,20 @@ where:
 * $\varepsilon$ is the interface width,
 * $\mathbf{v}^*$ is the velocity field from the Stokes problem (potentially averaged between $k$ and $k+1$).
 
-### 2. Stokes flow with $\phi$-dependent viscosity
+### 2. Stokes flow with $\varphi$-dependent viscosity
 
 The velocity $\mathbf{v}$ and pressure $p$ satisfy:
 
 $$
--\nabla \cdot \sigma(\phi^k,\nabla\mathbf{v}^{k+1},p^{k+1}) = \mathbf{f}_{\text{grav}}(\phi^k), \quad \nabla \cdot \mathbf{v}^{k+1} = 0,
+-\nabla \cdot \sigma(\varphi^k,\nabla\mathbf{v}^{k+1},p^{k+1}) = \mathbf{f}_{\text{grav}}(\varphi^k), \quad \nabla \cdot \mathbf{v}^{k+1} = 0,
 $$
 
 with:
 
-* $\sigma = -p\mathbb{I}+2 \mu(\phi) \boldsymbol{\varepsilon}(\mathbf{v})$ (Cauchy stress),
+* $\sigma = -p\mathbb{I}+2 \mu(\varphi) \boldsymbol{\varepsilon}(\mathbf{v})$ (Cauchy stress),
 * $\boldsymbol{\varepsilon}(\mathbf{v}) = \tfrac{1}{2}(\nabla \mathbf{v} + \nabla \mathbf{v}^T)$ (symmetric gradient),
-* $\mu(\phi) = \mu_s |\phi| + \mu_g |1 - \phi|$ (interpolated viscosity),
-* $\mathbf{f}_{\text{grav}}(\phi) = \mathbf{g} \phi$ (gravity acting in one granular phase).
+* $\mu(\varphi) = \mu_s |\varphi| + \mu_g |1 - \varphi|$ (interpolated viscosity),
+* $\mathbf{f}_{\text{grav}}(\varphi) = \mathbf{g} \varphi$ (gravity acting in one granular phase).
 
 Boundary terms include slip and penalty constraints
 
