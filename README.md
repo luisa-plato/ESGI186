@@ -14,7 +14,7 @@ This documentation describes a coupled phase-field and flow model, combining the
 
 ## Model
 
-We consider a domain $\Omega \subset \mathbb{R}^2$ (cross-section of the rotary kiln) and a phase-field variable $\phi : \Omega \times [0, T] \to [0, 1]$, where $\phi \approx 1$ denotes the granular phase and $\phi \approx 0$ denotes the gas phase.
+We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross-section $d=2$) and a phase-field variable $\phi : \Omega \times [0, T] \to [0, 1]$, where $\phi \approx 1$ denotes the granular phase and $\phi \approx 0$ denotes the gas phase.
 
 ### 1. Allen–Cahn equation (with advection)
 
