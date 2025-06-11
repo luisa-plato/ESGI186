@@ -6,13 +6,9 @@
 
 <img src="media/kiln.gif" width="50%">
 
-**Description:** ...
+**Description:** This documentation describes a coupled phase-field and flow model, combining the Allen–Cahn equation with incompressible Stokes flow. This is a first step towards the simulation of a rotary kiln (the granular flow aspect of it) as a problem considered in a  European Study Groups with Industry at NTU Trondheim (**ESGI 186 – the Norwegian Study Group with Industry**).
 
-# Allen–Cahn–Stokes model for rotary kiln
-
-This documentation describes a coupled phase-field and flow model, combining the Allen–Cahn equation with incompressible Stokes flow. This is a first step towards the simulation of a rotary kiln (the granular flow aspect of it) as a problem considered in the ESGI 186 at NTU Trondheim.
-
-## Model
+## Allen–Cahn–Stokes model for rotary kiln
 
 We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross-section $d=2$) and a phase-field variable $\phi : \Omega \times [0, T] \to [0, 1]$, where $\phi \approx 1$ denotes the granular phase and $\phi \approx 0$ denotes the gas phase.
 
@@ -58,19 +54,3 @@ which for $\beta_{\text{pen}}\gg 1$ should lead to $v\cdot n=0$ and for $\beta_{
 **Reference:**
 * granular rheology (Gray, J. M. N. T. (2001). *Granular flow in partially filled slowly rotating drums*. JFM)
 
-## Installation
-
-To install the project, clone the repository and install the required dependencies:
-
-```bash
-git clone <repository-url>
-cd my-project
-```
-
-## Usage
-
-After installation, you can run the project by using the appropriate scripts in the `src` folder.
-
-## Output files
-
-Please note that the output files are `.vtu`, `.pvd`, and `.h5`, and are listed in the `.gitignore` file to ensure they are not included in the version control system.
