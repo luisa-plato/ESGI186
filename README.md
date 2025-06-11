@@ -4,6 +4,8 @@
 
 **Language:** Python + FEniCS
 
+[media/kiln.gif]
+
 **Description:** ...
 
 This project is designed to implement the main logic in the `src` folder.
