@@ -17,7 +17,7 @@ We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross
 The phase field evolves according to:
 
 $$
-\frac{\phi^{n+1} - \phi^n}{\tau} + \mathbf{v} \cdot \nabla \phi^{n+1} = m\left[-\varepsilon \Delta \phi^{n+1} + \frac{2}{\varepsilon} \phi^{n+1} (2(\phi^{n+1})^2 - 3\phi^{n+1} + 1)\right],
+\frac{\phi^{k+1} - \phi^k}{\tau} + \mathbf{v}^* \cdot \nabla \phi^{k+1} = m\left[-\varepsilon \Delta \phi^{k+1} + \frac{2}{\varepsilon} \phi^{k+1} (2(\phi^{k+1})^2 - 3\phi^{k+1} + 1)\right],
 $$
 
 where:
@@ -25,14 +25,14 @@ where:
 * $\tau$ is the time step,
 * $m$ is the mobility,
 * $\varepsilon$ is the interface width,
-* $\mathbf{v}$ is the velocity field from the Stokes problem.
+* $\mathbf{v}^*$ is the velocity field from the Stokes problem (potentially averaged between $k$ and $k+1$).
 
 ### 2. Stokes flow with $\phi$-dependent viscosity
 
 The velocity $\mathbf{v}$ and pressure $p$ satisfy:
 
 $$
--\nabla \cdot \sigma(\phi,\nabla\mathbf{v},p) = \mathbf{f}_{\text{grav}}(\phi), \quad \nabla \cdot \mathbf{v} = 0,
+-\nabla \cdot \sigma(\phi^k,\nabla\mathbf{v}^{k+1},p^{k+1}) = \mathbf{f}_{\text{grav}}(\phi^k), \quad \nabla \cdot \mathbf{v}^{k+1} = 0,
 $$
 
 with:
