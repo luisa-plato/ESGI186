@@ -4,7 +4,7 @@
 
 **Language:** Python + FEniCS
 
-<img src="media/kiln.gif">
+<img src="media/kiln.gif" width="50%">
 
 **Description:** ...
 
