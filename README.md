@@ -17,7 +17,7 @@ We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross
 The phase field evolves according to:
 
 $$
-\frac{\phi^{k+1} - \phi^k}{\tau} + \mathbf{v}^* \cdot \nabla \phi^{k+1} = m\left[-\varepsilon \Delta \phi^{k+1} + \frac{2}{\varepsilon} \phi^{k+1} (2(\phi^{k+1})^2 - 3\phi^{k+1} + 1)\right],
+\frac{\varphi^{k+1} - \phi^k}{\tau} + \mathbf{v}^* \cdot \nabla \phi^{k+1} = m\left[-\varepsilon \Delta \phi^{k+1} + \frac{2}{\varepsilon} \phi^{k+1} (2(\phi^{k+1})^2 - 3\phi^{k+1} + 1)\right],
 $$
 
 where:
