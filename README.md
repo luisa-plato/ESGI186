@@ -4,7 +4,7 @@
 
 **Language:** Python + FEniCS
 
-**Description:** This documentation describes a coupled phase-field and flow model, combining the Allen–Cahn equation with incompressible Stokes flow. This is a first step towards the simulation of a rotary kiln (the granular flow aspect of it) as a problem considered in a  European Study Groups with Industry at NTU Trondheim (**ESGI 186 – the Norwegian Study Group with Industry**).
+**Description:** This documentation describes a coupled phase-field and flow model, combining the Allen–Cahn equation with incompressible Stokes flow. This is a first step towards the simulation of a rotary kiln (the granular flow aspect of it) as a problem considered in a  European Study Groups with Industry at NTNU Trondheim (**ESGI 186 – the Norwegian Study Group with Industry**).
 
 <img src="media/kiln.gif" width="50%">
 
