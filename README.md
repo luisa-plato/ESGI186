@@ -52,5 +52,5 @@ which for $\beta_{\text{pen}}\gg 1$ should lead to $v\cdot n=0$ and for $\beta_{
 
 
 **Reference:**
-* Gray, J. M. N. T. (2001). Granular flow in partially filled slowly rotating drums. Journal of Fluid Mechanics, 441, 1-29.
+* Gray, J. M. N. T. (2001). [Granular flow in partially filled slowly rotating drums](https://doi.org/10.1017/S0022112001004736). Journal of Fluid Mechanics, 441, 1-29.
 
