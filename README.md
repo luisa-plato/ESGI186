@@ -8,6 +8,13 @@
 
 <img src="media/kiln.gif" width="50%">
 
+**Running the code**
+* Install *FEniCS legacy 2019.1.0* for example using the [package manager conda](https://anaconda.org/conda-forge/fenics) or via docker/podman `docker pull quay.io/fenicsproject/stable:latest`
+* For the 3D kiln simulation create a directory with the folder name `./src/kiln3D/`
+* Run the example of your choosing: `2D_disc.py`, `2D_rectangle.py`, `3D_kiln.py`
+* For the 3D example run the jupyter notebook `postprocessing.ipynb`
+* Use [Paraview](https://www.paraview.org) to visualize the created `vtk` data 
+
 ## Allen–Cahn–Stokes model for rotary kiln
 
 We consider a domain $\Omega \subset \mathbb{R}^d$ (rotary kiln $d=3$ or a cross-section $d=2$) and a phase-field variable $\varphi : \Omega \times [0, T] \to [0, 1]$, where $\varphi \approx 1$ denotes the granular phase and $\varphi \approx 0$ denotes the gas phase.
@@ -53,10 +60,3 @@ which for $\beta_{\text{pen}}\gg 1$ should lead to $v\cdot n=0$ and for $\beta_{
 
 **Reference:**
 * Gray, J. M. N. T. (2001). [Granular flow in partially filled slowly rotating drums](https://doi.org/10.1017/S0022112001004736). Journal of Fluid Mechanics, 441, 1-29.
-
-**Running the code**
-* [install *FEniCS legacy* for example using the package manager conda](https://anaconda.org/conda-forge/fenics)
-* For the 3D kiln simulation create a directory with the folder name `./src/kiln3D/`
-* Run the example of your choosing: `2D_disc.py`, `2D_rectangle.py`, `3D_kiln.py`
-* For the 3D example run the jupyter notebook `postprocessing.ipynb`
-* Use [Paraview](https://www.paraview.org) to visualize the created `vtk` data 
