@@ -1,3 +1,11 @@
+"""
+2D Rotating Disc Simulation
+===========================
+Solves coupled Stokes-Allen-Cahn equations for granular flow in a rotating circular disc.
+- Geometry: 2D circular domain (cross-section of rotating cylinder)
+- Key features: Slip boundary conditions, pure rotation with angular velocity ω, no axial flow
+"""
+
 # Import FEniCS and the required libraries
 from dolfin import *
 import numpy as np
@@ -7,7 +15,7 @@ from tqdm import tqdm
 # Turn off logging
 set_log_level(LogLevel.ERROR)  # Only show errors
 
-#Set parameter values
+# Set parameter values
 T = 2.0*4           # final time
 num_steps = 500    # number of time steps
 τ  = T / num_steps  # time step size
@@ -22,11 +30,11 @@ m  = 0.005          # mobility of the Allen-Cahn equation
 
 # run1 
 β_slip = 0.2           # slip tangential flow
-fname  = 'output_0_2'  # Output folder name
+fname  = 'disc2D_0_2'  # Output folder name
 
 # run2
 β_slip = 0.05          # slip tangential flow
-fname  = 'output_0_05' # Output folder name
+fname  = 'disc2D_0_05' # Output folder name
 
 n_refine = 3  # Number of times to refine the mesh
 
@@ -122,3 +130,5 @@ for n in tqdm(range(num_steps)):
     # Update previous solution
     φ_n.assign(φ)
     vp_n.assign(vp)
+
+print('Done.')

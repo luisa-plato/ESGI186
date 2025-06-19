@@ -1,3 +1,11 @@
+"""
+2D Rectangular Channel Flow
+===========================
+Solves coupled Stokes-Allen-Cahn equations for granular flow in a horizontal rectangular channel.
+- Geometry: 2D rectangular domain with inlet/outlet boundaries
+- Key features: Inflow boundary conditions, slip at top/bottom walls
+"""
+
 # Importing FEniCS and the required libraries
 from dolfin import *
 import numpy as np
@@ -22,6 +30,7 @@ m  = 0.5            # mobility of the Allen-Cahn equation
 β_pen  = 1e+4       # penality normal flow
 β_slip = 0.05        # slip tangential flow
 n_refine = 3        # Number of times to refine the mesh
+fname = 'rect2D'  # Output folder name
 
 # create initial mesh for a rectangular domain of length L
 L = 5
@@ -101,15 +110,10 @@ def solve_stokes(vp_n, φ):
 def solve_ac(φ_n, v,v1, τ):
     φ,ψ = Function(V),TestFunction(V)
 
-    #Define boundary conditions
+    # Define boundary conditions
     bc_left = DirichletBC(V, phi_in, boundary_left)
-    
     F_ac  = (φ - φ_n)/τ*ψ*dx + m*ε*inner(grad(φ), grad(ψ))*dx + 2*m/ε*φ*(2*φ*φ-3*φ+1)*ψ*dx
     F_ac += 0.5*(dot(v, grad(φ))+dot(v1, grad(φ_n))) * ψ * dx
-
-    #Outflow condition for right boundary
-    #nn = FacetNormal(mesh)
-    #F_ac -= dot(grad(φ) - φ * v, nn) * ψ * ds(2)
 
     # Set initial guess for the Allen-Cahn solver to the previous phase field
     φ.assign(φ_n)
@@ -124,8 +128,8 @@ def solve_ac(φ_n, v,v1, τ):
 
 
 # Create a VTK file for visualization
-vtkfile_φ = File('rect_0/phi.pvd')
-vtkfile_v = File('rect_0/velocity.pvd')
+vtkfile_φ = File(f'{fname}/phi.pvd')
+vtkfile_v = File(f'{fname}/velocity.pvd')
 
 # Time-stepping loop
 t = 0
@@ -156,3 +160,5 @@ for n in tqdm(range(num_steps)):
     # Update previous solution
     φ_n.assign(φ)
     vp_n.assign(vp)
+
+print('Done.')

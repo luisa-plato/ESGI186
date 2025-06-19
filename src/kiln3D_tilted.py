@@ -1,3 +1,11 @@
+"""
+3D Rotary Kiln Simulation
+=========================
+Solves coupled Stokes-Allen-Cahn equations for granular flow in a 3D tilted half-cylinder.
+- Geometry: Half-cylindrical kiln with feeding inlet and discharge outlet
+- Key features: Material feeding at inlet, slip boundary conditions on rotating walls
+"""
+
 from dolfin import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,21 +72,7 @@ radius = 1.0
 height = 5.0
 v_feed = Constant((0.0,0.0,5.0))
 
-# # Full lower-half cylinder from z = -height to z = 0
-# full_cylinder = Cylinder(Point(0.0, 0.0, -height),  # bottom center
-#                          Point(0.0, 0.0, 0.0),      # top center
-#                          radius, radius)
-
-# # Subtract box that removes x < 0 part
-# cutting_box = Box(Point(2*radius, -2*radius, -2*height),
-#                   Point(0.0, 2*radius, 1.0))  # everything with x < 0
-
-# # Perform subtraction
-# half_cylinder = full_cylinder - cutting_box
-
-# # Generate mesh
-# mesh_resolution = 96
-# mesh = generate_mesh(half_cylinder, mesh_resolution)
+# Read mesh
 mesh = read_mesh("../meshes/mesh3D")
 mesh = refine(mesh)
 
@@ -98,16 +92,7 @@ facets = MeshFunction("size_t", mesh, 2)
 AutoSubDomain(boundary_wall_bottom).mark(facets, 1)
 ds = Measure("ds", subdomain_data=facets)
 
-#onefunc = interpolate(Constant(1.0), FunctionSpace(mesh, 'CG', 1))
-#print("onefunc",assemble(onefunc*ds(1)),"=",np.pi*5)
-#F = File("kiln3D_tilted/facets.pvd")
-#F << facets
-#sys.exit()
-
-
 print('Mesh generated with', mesh.num_vertices(), 'vertices and', mesh.num_cells(), 'cells.')
-
-# create initial mesh (half circular domain)
 
 v_rot  = Expression(("omega * x[1]","-omega * x[0]","0"), degree=2, omega = ω)
 
@@ -178,10 +163,8 @@ for n in tqdm(range(num_steps)):
     # Solve for the velocity v
     vp_n1.assign(vp_n)
     vp = solve_stokes(vp_n,φ_n)
-    # v,p = vp.split()
 
     # Solve the the phase field φ
-    # φ = solve_ac(φ_n, v, τ)
     φ = solve_ac(φ_n,vp.sub(0),vp_n1.sub(0), τ)
 
 
