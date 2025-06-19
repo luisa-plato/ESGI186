@@ -54,3 +54,9 @@ which for $\beta_{\text{pen}}\gg 1$ should lead to $v\cdot n=0$ and for $\beta_{
 **Reference:**
 * Gray, J. M. N. T. (2001). [Granular flow in partially filled slowly rotating drums](https://doi.org/10.1017/S0022112001004736). Journal of Fluid Mechanics, 441, 1-29.
 
+**Running the code**
+* [install *FEniCS legacy* for example using the package manager conda](https://anaconda.org/conda-forge/fenics)
+* For the 3D kiln simulation create a directory with the folder name `./src/kiln3D/`
+* Run the example of your choosing: `2D_disc.py`, `2D_rectangle.py`, `3D_kiln.py`
+* For the 3D example run the jupyter notebook `postprocessing.ipynb`
+* Use [Paraview](https://www.paraview.org) to visualize the created `vtk` data 
