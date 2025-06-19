@@ -8,7 +8,7 @@
 
 <img src="media/kiln.gif" width="50%">
 
-**Running the code**
+**Running the code:**
 * Install *FEniCS legacy 2019.1.0* for example using the
     - [package manager conda](https://anaconda.org/conda-forge/fenics)
     - docker/podman `docker pull quay.io/fenicsproject/stable:latest`
