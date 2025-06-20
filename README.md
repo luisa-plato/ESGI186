@@ -8,9 +8,9 @@
 
 <img src="media/kiln.gif" width="50%">
 
-**Running the code:**
-* Install *FEniCS legacy 2019.1.0* for example using the
-    - [package manager conda](https://anaconda.org/conda-forge/fenics)
+**Installing/running the code:**
+* Install *FEniCS legacy 2019.1.0*, e.g., using the
+    - [package manager (mini)conda](https://anaconda.org/conda-forge/fenics)
     - docker/podman `docker pull quay.io/fenicsproject/stable:latest`
 * For the 3D kiln simulation create a directory with the folder name `./src/kiln3D/`
 * Run the example of your choosing: `2D_disc.py`, `2D_rectangle.py`, `3D_kiln.py`
